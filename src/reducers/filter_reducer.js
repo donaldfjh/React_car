@@ -11,8 +11,13 @@ import {
 
 const filter_reducer = (state, action) => {
   if(action.type === LOAD_PRODUCTS){
-    const products = action.payload
-    return {...state, all_products: products, filtered_products:products}
+    let maxPrice = action.payload.map((item)=>item.price)
+    maxPrice = Math.max(...maxPrice)
+
+    return {...state, all_products: [...action.payload], 
+      filtered_products:[...action.payload],
+      filters:{...state.filters,max_price:maxPrice, price : maxPrice}
+    }
   }
 
   if(action.type === SET_GRIDVIEW){
@@ -60,6 +65,81 @@ const filter_reducer = (state, action) => {
       })
     }
     return {...state, filtered_products:temProducts}
+  }
+  // we use [name]: value dynamic change the value in side the filters object
+  if(action.type ===UPDATE_FILTERS){
+    const {name,value} = action.payload
+    return {...state, filters:{...state.filters,[name]:value}}
+  }
+
+  if(action.type === FILTER_PRODUCTS){
+    console.log('filtering product')
+    const {all_products} = state
+    const {text,company,category,color,price,shipping} = state.filters
+
+    let tempProduct = [...all_products]
+    console.log(tempProduct)
+
+    if(text){
+      tempProduct = tempProduct.filter((item)=>{
+        return (
+          item.name.toLowerCase().startsWith(text)
+        )
+      })
+    }
+    if(category !== 'all'){
+      tempProduct = tempProduct.filter((item)=>{
+        return(
+          item.category.toLowerCase() === category
+        )
+      })
+    }
+
+    if(company !== 'all'){
+      tempProduct = tempProduct.filter((item)=>{
+        return(
+          item.company.toLowerCase() === company
+        )
+      })
+    }
+
+    if(color !== 'all'){
+      tempProduct = tempProduct.filter((item)=>{
+        return(
+          item.colors.find((c)=>c===color)
+        )
+      })
+    }
+
+    if(shipping){
+      tempProduct = tempProduct.filter((item)=>{
+        return (
+          item.shipping === true
+        )
+      })
+    }
+
+    tempProduct = tempProduct.filter((item)=>{
+      return (
+        item.price <= price
+      )
+    })
+
+    // filtering
+    return {...state, filtered_products: tempProduct}
+  }
+
+  if(action.type === CLEAR_FILTERS){
+    return {...state, filters : { 
+    ...state.filters,
+    text:'',
+    company:'all',
+    category:'all',
+    color:'all',
+    price:0,
+    price : state.filters.max_price,
+    shipping:false}
+  }
   }
   return state
   throw new Error(`No Matching "${action.type}" - action type`)
