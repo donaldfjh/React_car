@@ -46,7 +46,7 @@ const filter_reducer = (state, action) => {
           return -1
         }
         if(a.price > b.price){
-          return 1 
+          return 1 // when >0 后面的放前面
         }
         return 0
       })
@@ -73,7 +73,6 @@ const filter_reducer = (state, action) => {
   }
 
   if(action.type === FILTER_PRODUCTS){
-    console.log('filtering product')
     const {all_products} = state
     const {text,company,category,color,price,shipping} = state.filters
 
