@@ -11,7 +11,18 @@ import { Auth0Provider } from '@auth0/auth0-react';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 
+//dev-6irzrhy766utyycg.au.auth0.com
+//q8O2NgkUhnnpdWKeW0trNveefm6uROyn
 root.render(
+    <Auth0Provider
+    domain={process.env.REACT_APP_AUTH_DOMAIN}
+    clientId={process.env.REACT_APP_AUTH_CLIENT_ID}
+    authorizationParams={{
+      redirect_uri: window.location.origin
+      
+    }}
+  >
+    <UserProvider>
     <ProductsProvider>
         <FilterProvider>
             <CartProvider>
@@ -19,4 +30,6 @@ root.render(
             </CartProvider>
         </FilterProvider>
     </ProductsProvider>
+    </UserProvider>
+    </Auth0Provider>
 );
